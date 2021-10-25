@@ -1,6 +1,6 @@
-package com.stacksimplify.restservices.service;
+package com.stacksimplify.restservices.services;
 
-import com.stacksimplify.restservices.dto.UserDetails;
+import com.stacksimplify.restservices.dtos.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
