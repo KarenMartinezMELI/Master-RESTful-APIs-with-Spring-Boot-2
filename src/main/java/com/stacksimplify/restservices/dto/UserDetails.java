@@ -1,5 +1,11 @@
-package com.stacksimplify.restservices.Hello;
+package com.stacksimplify.restservices.dto;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class UserDetails {
 
 	private String firstname;
@@ -11,25 +17,6 @@ public class UserDetails {
 	public UserDetails(String firstname, String lastname, String city) {
 		this.firstname = firstname;
 		this.lastname = lastname;
-		this.city = city;
-	}
-	//Getters and Setters
-	public String getFirstname() {
-		return firstname;
-	}
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-	public String getLastname() {
-		return lastname;
-	}
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
 		this.city = city;
 	}
 	

@@ -1,14 +1,19 @@
 # master-restful-apis-with-spring-boot-2
---------------------------------------------------------------------------------
-Step-00: Course Introduction
---------------------------------------------------------------------------------
-Step-01: Introduction to RESTful API
---------------------------------------------------------------------------------
-Step-03: Development Environment Setup
-    - Download Spring Tool Suite 4 from https://spring.io/tools and Install
-    - Clone the project from Github to IDE
-        - Github Link: https://github.com/stacksimplify/springboot-buildingblocks
-    - Import Project to workspace
-    - Checkout any branch from remote to local in IDE as per need.
-    - Download the "Master-RESTful-API-V1.zip" file from Resources section of course.         
---------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+Step-00: Github & HelloWorld Introduction
+-----------------------------------------------------------------------------------------
+Step-01: Create Spring boot base project from start.spring.io
+-----------------------------------------------------------------------------------------
+Step-02: Introduction for managing spring boot projects via github
+-----------------------------------------------------------------------------------------
+Step-03: Github Base Setup
+-----------------------------------------------------------------------------------------
+Step-04: Add GIT Repository to Spring Tool Suite IDE -  GIT Perspective
+-----------------------------------------------------------------------------------------
+Step-05: Create a Simple HelloWorld RESTful API which returns a String
+-----------------------------------------------------------------------------------------
+Step-06: Create a Simple Hello World REST Service which returns a Bean (JSON)
+-----------------------------------------------------------------------------------------
+Step-07: GIT Commit & Push Hello World RESTful service changes to Github
+-----------------------------------------------------------------------------------------
+
