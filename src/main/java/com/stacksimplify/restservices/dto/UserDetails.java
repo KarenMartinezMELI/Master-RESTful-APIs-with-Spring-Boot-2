@@ -1,4 +1,5 @@
-package com.stacksimplify.restservices.Hello;
+package com.stacksimplify.restservices.dto;
+
 
 public class UserDetails {
 
