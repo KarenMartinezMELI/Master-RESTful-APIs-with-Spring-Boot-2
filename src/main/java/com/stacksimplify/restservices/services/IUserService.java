@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IUserService {
 
-    UserDetails returnNewUserDetails();
     List<UserDetails> getAllUsers();
+    UserDetails createUser(UserDetails user);
 }

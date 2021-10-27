@@ -33,10 +33,10 @@ public class User {
     @Column(name = "email", length=50, nullable = false)
     private String email;
 
-    @Column(name = "role", length=50, nullable = false)
+    @Column(name = "role", length=50)
     private String role;
 
-    @Column(name = "ssn", length=50, nullable = false, unique = true)
+    @Column(name = "ssn", length=50, unique = true)
     private String ssn;
 
 }
