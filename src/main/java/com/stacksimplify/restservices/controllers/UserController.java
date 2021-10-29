@@ -7,10 +7,12 @@ import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 import java.util.List;
@@ -33,9 +35,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDetailsWithId> createUser(@RequestBody UserDetails user) {
+    public ResponseEntity<?> createUser(@RequestBody UserDetails user, UriComponentsBuilder builder) {
         try {
-            return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+            UserDetailsWithId userDetails=userService.createUser(user);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(builder.path("/users/{id}").buildAndExpand(userDetails.getId()).toUri());
+            return new ResponseEntity<>(userDetails, headers, HttpStatus.CREATED);
         } catch (UserCouldntBeSavedException | UserExistsException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
