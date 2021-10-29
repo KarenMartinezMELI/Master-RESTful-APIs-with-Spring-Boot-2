@@ -2,11 +2,17 @@ package com.stacksimplify.restservices.controllers;
 
 import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
+import com.stacksimplify.restservices.exceptions.UserCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.UserExistsException;
+import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 import java.util.List;
@@ -29,22 +35,37 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDetailsWithId> createUser(@RequestBody UserDetails user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+    public ResponseEntity<?> createUser(@RequestBody UserDetails user, UriComponentsBuilder builder) {
+        try {
+            UserDetailsWithId userDetails=userService.createUser(user);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(builder.path("/users/{id}").buildAndExpand(userDetails.getId()).toUri());
+            return new ResponseEntity<>(userDetails, headers, HttpStatus.CREATED);
+        } catch (UserCouldntBeSavedException | UserExistsException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetailsWithId> getUserById(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+        }catch (UserNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDetailsWithId> updateUserById(@PathVariable Long id, @RequestBody UserDetails user) {
-        return new ResponseEntity<>(userService.updateUserById(id, user), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(userService.updateUserById(id, user), HttpStatus.OK);
+        }catch (UserNotFoundException | UserCouldntBeSavedException ex){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> updateUserById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
