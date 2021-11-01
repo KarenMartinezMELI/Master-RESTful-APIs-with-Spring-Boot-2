@@ -90,7 +90,7 @@ public class UserService implements IUserService{
     public UserDetailsWithId getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
         if(!user.isPresent()){
-            return new UserDetailsWithId();
+            return null;
         }
         return mapUserToUserDetailsWithId(user.get());
     }
