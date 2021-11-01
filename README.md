@@ -1,137 +1,119 @@
 # master-restful-apis-with-spring-boot-2
 
----------------------------------------------------------------------------------------
-Step-00: Introduction
+-----------------------------------------------------------------------------
+Step-00: Usecase Introduction
+    - Get All orders of a User 
+        - Method Name: getAllOrders    
+        - GET /users/{userid}/orders
+    - Create an order for a user
+        - Method Name: createOrder
+        - GET /users/{userid}/orders
+    - Get order details using orderid and userid
+        - Method Name: getOrderByOrderId
+        - GET /users/{userid}/orders/{orderid}        
 
----------------------------------------------------------------------------------------
-Step-00: Create new git branch in local git repo and remote github repo
-    - Verify we are in master branch    
-        - git status
-    - Create new branch
-        - git checkout -b 05-Validations-GlobalExceptionHandler
-    - Create new branch in remote github and setup upstream   
-        - git push --set-upstream origin 05-Validations-GlobalExceptionHandler
-    - Verify new branch in remote github & IDE GIT Perspective             
-        - https://github.com/stacksimplify/springboot-buildingblocks     
+-----------------------------------------------------------------------------
+Step-01: Create GIT branch for JPA @OneToMany Association
+git branch -vva
+git status
+git checkout -b 06-SpringBoot-JPA-OneToMany
+git push --set-upstream origin 06-SpringBoot-JPA-OneToMany
+git branch -a
 
----------------------------------------------------------------------------------------
-Step-01: Implement Bean Validation
+-----------------------------------------------------------------------------
+Step-02: Create Order entity and ManyToOne Mapping
     - Entity Layer
-        - Implement validations on User Entity
-            - @NotEmpty(message = "Username is Mandatory field. Please provide username")
-            - @Size(min=2, message="FirstName should have atleast 2 characters")            
-    - Test using POSTMAN
-         - Service: Create User Service
-         - Request body
-            - For firstname, give only 1 character  ("firstname": "K")
-            - Send username as empty  ("username": "")
-        - Verify Response on POSTMAN (JPA exception will be thrown)
-    - Controller Layer
-        - Enable Bean validation using @Valid
-    - Test using POSTMAN
-        - Service: Create User Service
-        - Request body
-            - For firstname, give only 1 character  ("firstname": "K")
-            - Send username as empty  ("username": "")
-        - Verify Response
-            - HTTP Status 400 Bad request - with default response body 
-            - MethodArgumentNotValidException resolved from logs      
+        - Create Order Entity
+        - Annotate with @Table(name = "orders")
+        - Add User variable
+        - Add @ManyToOne Mapping
+        - Add Fetch Type as lazy
+        - Add @JsonIgnore
+        - Add Getters and setters
+        - Add NoArgument Constructor
+ 
+-----------------------------------------------------------------------------
+Step-03: Update User entity with @OneToMany association
+    - Add orders variable
+    - Add @OneToMany Mapping
+    - Add MappedBy to user variable in Order Entity
+    - Add getters and setters for "orders"
+    - src/main/resources
+        - update data.sql
+Option#1: Verify Column and create insert query       
+insert into orders values( 2001, 'order11', 101);        
+insert into orders values( 2002, 'order12', 101);
+insert into orders values( 2003, 'order13', 101);
+insert into orders values( 2004, 'order21', 102);
+insert into orders values( 2005, 'order22', 102);
+insert into orders values( 2006, 'order31', 103);
+Option#2: Verify Foreign Key name in DB before creating below insert queries
+insert into orders (orderid, orderdescription, user_user_id) values( 2001, 'order11', 101);
+insert into orders (orderid, orderdescription, user_user_id) values( 2002, 'order12', 101);
+insert into orders (orderid, orderdescription, user_user_id) values( 2003, 'order13', 101);
+insert into orders (orderid, orderdescription, user_user_id) values( 2004, 'order21', 102);
+insert into orders (orderid, orderdescription, user_user_id) values( 2005, 'order22', 102);
+insert into orders (orderid, orderdescription, user_user_id) values( 2006, 'order31', 103);
 
---------------------------------------------------------------------------------------
-Step-02: Implement Custom Global Exception Handler - MethodArgumentNotValidException
-    - Exception Layer - CustomErrorInfo class
-        - Create a new class CustomErrorInfo                  
-            - Define Variables date, message, errordetails
-        - Add Fields Constructor
-        - Add Getters                
-    - Exception Layer - CustomGlobalExceptionHandler
-        - Create a new class CustomGlobalExceptionHandler
-        - extends ResponseEntityExceptionHandler
-        - @ControllerAdvice
-            - Global code that can be applied to a wide range of controllers.
-        - Implement & Override handleMethodArgumentNotValid from ResponseEntityExceptionHandler
-    - Test using POSTMAN
-        - Method: POST 
-        - Service: Create User Service
-        - URI: http://locahost:8080/users
-        - Request body
-            - For firstname, give only 1 character  ("firstname": "K")
-            - Send username as empty  ("username": "")
-        - Verify Response
-            - Custom Error Response
-            - HTTP 400 Bad Request        
+    - Test using Postman
+        - Test#1: getAllUsers
+            - GET /users
+        - Test#2: getUserById 
+            - GET /users/101  
 
----------------------------------------------------------------------------------------
-Steo-03: Implement "HttpRequestMethodNotSupportedException" in Custom Global Exception Handler
-    - Test using POSTMAN
-        - Provide PATCH method for create user
-        - Verify response code and body   
-    - Exception Layer -  CustomGlobalExceptionHandler
-        - Implement & Override handleHttpRequestMethodNotSupported from ResponseEntityExceptionHandler 
-    - Test using POSTMAN
-        - Provide PATCH method for create user
-        - Verify response code and body  
+-----------------------------------------------------------------------------
+Step-04: Implement "getAllOrders" method in OrderController 
+    - Controller Layer: UserController
+        - Add @RequestMapping at class level and add "/users" context at class level
+        - Remove "/users" at method level for all User related methods. 
+        - This will help us when creating self links in HATEOAS section.
+    - Controller Layer: OrderController
+        - Annotate with @RestController
+        - Annotate with @RequestMapping
+        - Method: getAllOrders
+        - GET /users/{userid}/orders
+    - Test using Postman
+        - Test#1: getAllOrders
+            - GET /users/101/orders
+        - Test#2: getAllUsers
+            - GET /users                           
+        - Test#3: getUserById
+            - GET /users/101
 
----------------------------------------------------------------------------------------
-Step-04: Implement ExceptionHandler for custom exception like "UserNameNotFoundException"
-    - Exception Layer
-        - Create a new class "UserNameNotFoundException" 
-            - extends Exception
-            - Generate constructor from Super class
-    - Controller Layer
-        - For getUserbyUsername Method, Throw UserNameNotFoundException if that user doesnt exists in Repository.
-    - Test using POSTMAN
-        - Method: GET
-        - URI: http://localhost:8080/users/byusername/abcd
-        - Verify default spring Exception (Response code HTTP 500)
-    - Exception Layer -  CustomGlobalExceptionHandler
-        - Create handleUserNameNotFoundException method
-        - Annotate it with @ExceptionHandler
-    - Test using POSTMAN
-        - Method: GET
-        - URI: http://localhost:8080/users/byusername/abcd
-        - Verify the Response Body and HTTP Status Code 404  
+-----------------------------------------------------------------------------
+Step-05: Implement "createOrder" method in OrderController
+    - Repository Layer
+        - Create OrderRepository
+    - Controller Layer: OrderController
+        - Method: createOrder
+        - POST /users/{userid}/orders 
+    - Test using Postman
+        - Test#1: createOrder 
+            - POST /users/101/orders  
+        - Test#2: getAllOrders
+            - GET /users/101/orders
+        - Test#3: getAllUsers
+            - GET /users
+        - Test#4: getUserById 
+            - GET /users/101            
 
----------------------------------------------------------------------------------------
-Step-05: Path Variables Validation & Handling ConstraintViolationException using CustomGlobalExceptionHandler
-    - Contoller Layer
-        - getUserById method: Add @Min(1) for Path Variable
-        - Add @Validated annotation to UserController class
-    - Test using POSTMAN
-        - Method: GET
-        - URI: http://localhost:8080/users/0
-        - Verify default spring Exception (Response code HTTP 500)
-    - Exception Layer -  CustomGlobalExceptionHandler
-        - Create handleConstraintViolationException class 
-        - Annotate it with @ExceptionHandler
-    - Test using POSTMAN
-        - Method: GET
-        - URI: http://localhost:8080/users/0
-        - Verify the Response Body and HTTP Status Code - 400   
+-----------------------------------------------------------------------------
+Step-06: Implement "getOrderByOrderId" method in OrderController
+    - Controller Layer: OrderController
+        - Method: getOrderByOrderId
+        - GET /users/{userid}/orders/{orderid}
+    - Test using Postman
+        - Test#1: getOrderByOrderId
+            - GET /users/{userid}/orders/{orderid}
 
----------------------------------------------------------------------------------------
-Step-06: Implement Global Exception Handling using RestControllerAdvice
-    - Exception Layer - CustomGlobalExceptionHandler
-        - Comment @ControllerAdvice
-        - Test to ensure controller advice is not in action for getUserByUsername
-    - Exception Layer 
-        - Create new class GlobalRestControllerAdviceExceptionHandler
-        - Annotate with @RestControllerAdvice
-        - Handle UserNameNotFoundException        
-            - Create a mehtod notFound 
-            - Annotate it with @ExceptionHandler
-            - Annotate it with @ResponseStatus - 404
-    - Test using POSTMAN
-        - Method: GET
-        - URI: http://localhost:8080/users/byusername/abcd12
-        - Verify the Response Body and HTTP Status Code  - 404          
+-----------------------------------------------------------------------------
+Step-07: GIT commit code, push to remote, merge to master and push to remote 
+git status
+git add .
+git commit -am "First Commit - OneToMany"
+git push
+git checkout master
+git merge 06-SpringBoot-JPA-OneToMany
+git branch -vva
 
----------------------------------------------------------------------------------------
-Step-07: Note about switching between @ControllerAdvice and @RestControllerAdvice
-
----------------------------------------------------------------------------------------
-Step-08: GIT Commit, Push, Merge to Master and Push
-
----------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------
