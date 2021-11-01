@@ -4,6 +4,7 @@ import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
 import com.stacksimplify.restservices.exceptions.UserCouldntBeSavedException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
+import com.stacksimplify.restservices.exceptions.UserNameNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
+import javax.validation.Valid;
 import java.util.List;
 
 //Controller
@@ -35,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserDetails user, UriComponentsBuilder builder) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDetails user, UriComponentsBuilder builder) {
         try {
             UserDetailsWithId userDetails=userService.createUser(user);
             HttpHeaders headers = new HttpHeaders();
@@ -56,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDetailsWithId> updateUserById(@PathVariable Long id, @RequestBody UserDetails user) {
+    public ResponseEntity<UserDetailsWithId> updateUserById(@PathVariable Long id, @Valid @RequestBody UserDetails user) {
         try {
             return new ResponseEntity<>(userService.updateUserById(id, user), HttpStatus.OK);
         }catch (UserNotFoundException | UserCouldntBeSavedException ex){
@@ -71,7 +73,11 @@ public class UserController {
     }
 
     @GetMapping("/byusername/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
-        return new ResponseEntity<>(userService.getUserByUsername(username), HttpStatus.OK);
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) throws UserNameNotFoundException {
+        UserDetailsWithId user = userService.getUserByUsername(username);
+        if (user == null){
+            throw new UserNameNotFoundException("Username: '"+username+"' not found in User repository");
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
