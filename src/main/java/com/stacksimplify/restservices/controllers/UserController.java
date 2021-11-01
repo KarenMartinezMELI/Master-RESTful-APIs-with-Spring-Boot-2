@@ -11,16 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 //Controller
 @RestController
+@Validated
 @RequestMapping("/users")
 public class UserController {
 
@@ -49,7 +52,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDetailsWithId> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDetailsWithId> getUserById(@Min(1) @PathVariable Long id) {
         try {
             return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
         }catch (UserNotFoundException ex){

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Date;
 
 //Applies to all Controllers
@@ -38,5 +39,13 @@ public class CustomGlobalExceptionHandling extends ResponseEntityExceptionHandle
                 request.getDescription(false),
                 ex.getMessage() );
         return new ResponseEntity<>(customErrorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    //@ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+        CustomErrorDetails customErrorDetails = new CustomErrorDetails(new Date(),
+                request.getDescription(false),
+                ex.getMessage() );
+        return new ResponseEntity<>(customErrorDetails, HttpStatus.BAD_REQUEST);
     }
 }
