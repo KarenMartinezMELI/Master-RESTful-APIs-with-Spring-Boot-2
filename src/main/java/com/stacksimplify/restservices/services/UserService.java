@@ -51,6 +51,8 @@ public class UserService implements IUserService{
         if(userRepository.findByUsername(userCreation.getUsername()).isPresent()){
             throw new UserExistsException("User already exists in repository");
         }
+        System.out.println("OLA");
+        System.out.println(userCreation);
         User userReturn = userRepository.save(userCreation);
 
         if(userReturn==null){
@@ -112,7 +114,11 @@ public class UserService implements IUserService{
         userCreation.setFirstname(user.getFirstname());
         userCreation.setLastname(user.getLastname());
         userCreation.setId(user.getId());
-        userCreation.setOrders(user.getOrders().stream().map(order -> OrderParse.mapOrderToOrderDetailsWithId(order)).collect(Collectors.toList()));
+        if(user.getOrders()!=null) {
+            userCreation.setOrders(user.getOrders().stream().map(order -> OrderParse.mapOrderToOrderDetailsWithId(order)).collect(Collectors.toList()));
+        }else{
+            userCreation.setOrders(new ArrayList<>());
+        }
         return userCreation;
     }
 
