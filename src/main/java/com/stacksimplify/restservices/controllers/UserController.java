@@ -2,7 +2,7 @@ package com.stacksimplify.restservices.controllers;
 
 import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
-import com.stacksimplify.restservices.exceptions.UserCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNameNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,7 +22,6 @@ import java.util.List;
 
 //Controller
 @RestController
-@Validated
 @RequestMapping("/users")
 public class UserController {
 
@@ -46,7 +44,7 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(builder.path("/users/{id}").buildAndExpand(userDetails.getId()).toUri());
             return new ResponseEntity<>(userDetails, headers, HttpStatus.CREATED);
-        } catch (UserCouldntBeSavedException | UserExistsException ex) {
+        } catch (EntityCouldntBeSavedException | UserExistsException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
@@ -64,7 +62,7 @@ public class UserController {
     public ResponseEntity<UserDetailsWithId> updateUserById(@PathVariable Long id, @Valid @RequestBody UserDetails user) {
         try {
             return new ResponseEntity<>(userService.updateUserById(id, user), HttpStatus.OK);
-        }catch (UserNotFoundException | UserCouldntBeSavedException ex){
+        }catch (UserNotFoundException | EntityCouldntBeSavedException ex){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
@@ -83,4 +81,6 @@ public class UserController {
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+
 }

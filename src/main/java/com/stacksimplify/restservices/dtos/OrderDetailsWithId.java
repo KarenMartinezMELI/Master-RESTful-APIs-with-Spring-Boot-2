@@ -1,14 +1,12 @@
 package com.stacksimplify.restservices.dtos;
-import lombok.*;
 
-import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class UserDetailsWithId extends UserDetails{
+public class OrderDetailsWithId extends OrderDetails{
     private Long id;
-    private List<OrderDetailsWithId> orders;
 }

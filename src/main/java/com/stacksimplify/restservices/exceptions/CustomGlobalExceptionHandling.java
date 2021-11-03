@@ -41,7 +41,7 @@ public class CustomGlobalExceptionHandling extends ResponseEntityExceptionHandle
         return new ResponseEntity<>(customErrorDetails, HttpStatus.NOT_FOUND);
     }
 
-    //@ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
         CustomErrorDetails customErrorDetails = new CustomErrorDetails(new Date(),
                 request.getDescription(false),
