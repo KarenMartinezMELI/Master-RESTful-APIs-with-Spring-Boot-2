@@ -51,8 +51,6 @@ public class UserService implements IUserService{
         if(userRepository.findByUsername(userCreation.getUsername()).isPresent()){
             throw new UserExistsException("User already exists in repository");
         }
-        System.out.println("OLA");
-        System.out.println(userCreation);
         User userReturn = userRepository.save(userCreation);
 
         if(userReturn==null){

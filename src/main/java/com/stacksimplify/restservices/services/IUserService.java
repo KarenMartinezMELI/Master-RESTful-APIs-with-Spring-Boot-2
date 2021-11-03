@@ -4,6 +4,7 @@ import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
 import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
 import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.OrderNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import org.springframework.web.server.ResponseStatusException;

@@ -5,6 +5,7 @@ import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
 import com.stacksimplify.restservices.entities.Order;
 import com.stacksimplify.restservices.entities.User;
 import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.OrderNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.repositories.IOrderRepository;
 import com.stacksimplify.restservices.repositories.IUserRepository;
@@ -26,16 +27,6 @@ public class OrderService implements IOrderService{
         this.userRepository = userRepository;
     }
 
-    @Override
-    public List<OrderDetailsWithId> getAllOrders() {
-
-        List<Order> orders = orderRepository.findAll();
-        List<OrderDetailsWithId> orderDetails = new ArrayList<>();
-
-        orders.forEach(o->orderDetails.add(OrderParse.mapOrderToOrderDetailsWithId(o)));
-        return orderDetails;
-    }
-
     public OrderDetailsWithId createOrder(Long userId, OrderDetails order) throws UserNotFoundException, EntityCouldntBeSavedException {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()){
@@ -51,6 +42,26 @@ public class OrderService implements IOrderService{
         }
 
         return OrderParse.mapOrderToOrderDetailsWithId(orderReturn);
+    }
+
+    @Override
+    public OrderDetailsWithId getOrderByUserIdAndOrderId(Long userId, Long orderId) throws UserNotFoundException, OrderNotFoundException {
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()){
+            throw new UserNotFoundException("User Not found in User Repository");
+        }
+        Optional<Order> order = orderRepository.findById(orderId);
+
+        if(!order.isPresent()){
+            throw new OrderNotFoundException("Pair Order/User Not found");
+        }
+        Order orderFinal =order.get();
+
+        if(!orderFinal.getUser().getId().equals(user.get().getId())){
+            throw new OrderNotFoundException("Pair Order/User Not found");
+        }
+
+        return OrderParse.mapOrderToOrderDetailsWithId(orderFinal);
     }
 
     private Order mapOrderDetailsToOrder(OrderDetails orderDetails){

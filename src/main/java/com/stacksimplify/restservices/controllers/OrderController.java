@@ -5,6 +5,7 @@ import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
 import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
 import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.OrderNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IOrderService;
@@ -42,6 +43,15 @@ public class OrderController {
         try {
             return new ResponseEntity<>(userService.getAllOrders(userId), HttpStatus.OK);
         }catch (UserNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/orders/{orderId}")
+    public ResponseEntity<OrderDetailsWithId> getOrderByOrderId(@Min(1) @PathVariable("id") Long userId, @Min(1) @PathVariable("orderId") Long orderId) {
+        try {
+            return new ResponseEntity<>(orderService.getOrderByUserIdAndOrderId(userId, orderId), HttpStatus.OK);
+        }catch (UserNotFoundException | OrderNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }
