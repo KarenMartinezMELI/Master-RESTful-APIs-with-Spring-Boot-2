@@ -3,103 +3,35 @@
 Step-00: Introduction
 
 -----------------------------------------------------------------------------
-Step-00: New GIT branch for HATEOAS
+Step-00: New GIT branch for Internationalization
 git branch -vva
 git status
-git checkout -b 07-SpringBoot-HATEOAS
-git push --set-upstream origin 07-SpringBoot-HATEOAS
-git branch -a
+git checkout -b 08-SpringBoot-Internationalization
+git push --set-upstream origin 08-SpringBoot-Internationalization
+git branch -vva
 
 -----------------------------------------------------------------------------
-Step-01: Add Dependency in pom.xml
-    - Add dependency in pom.xml (spring-boot-starter-hateoas)
-    - Restart SpringBootApp (to reflect new dependency changes - new jar added)
+Step-01: Create required beans
+    - Define a Bean named LocaleResolver
+    - Add messages.properties, messages_fr.properties
+    - Define a Bean named ResourceBundleMessageSource  
 
 -----------------------------------------------------------------------------
-Step-02: Extend both Entities to ResourceSupport
-    - Entity Layer
-        -  
+Step-02: Create a REST service which supports i18n
+    - Create a helloi18n Method in HelloWorldController
+    - Test it via Postman with "Accept-Language" headers
+        - Accept-Language: fr 
+        - Accept-Language: us
+        - Accept-Language: en 
 
 -----------------------------------------------------------------------------
-Step-03: Create new User and Order Controllers for HATEOAS Implementation
-    - UserHateoasController
-        - Create new UserHateoasController
-        - Annotate with @RestController
-        - Annotate with @RequestMapping(value = "/hateoas/users")
-        - Annotate with @Validated
-        - Autowire Repositories (UserRepository)
-        - Copy Methods getUserById, getAllUsers from UserController    
-    - OrderHateoasController
-        - Create new OrderHateoasController 
-        - Annotate with @RestController
-        - Annotate with @RequestMapping(value = "/hateoas/users")
-        - Autowire Repositories (UserRepository, OrderRepository)
-        - Copy Methods getAllOrders from OrderController to OrderHateoasController  
-    - Test with Postman
-        - getUserById
-            - GET /hateoas/users/{userid}
-        - getAllUsers
-            - GET /hateoas/users
-        - getAllOrders  
-            - GET /hateoas/users/{userid}/orders      
-
------------------------------------------------------------------------------
-Step-04: Implement self link in getUserById Method 
-    - UserHateoasController
-        - getUserById - Self Linking        
-        - Method: getUserById    
-            - Extract UserId
-            - Create Link using ControllerLinkBuilder
-            - Add Link to Resource
-            - Instead of User return type -  Resource<User> (Return Type changed to Resource) 
-    - Test using Postman         
-        - Method: getUserById
-        - GET /hateoas/users/{userid}
-
------------------------------------------------------------------------------
-Step-05: Implement self and relationship links in getAllUsers Method in UserHateoasController
-    - 5(A) Self Link for each user in a for loop
-        - UserHateoasController 
-        - Method: getAllUsers    
-        - HATEOAS: Implement self linking for each user
-            - For loop
-            - Extract User 
-            - Create Link with ControllerLinkBuilder
-            - Add link 
-            - Change Return Type from List<User> to Resources<User>  
-    - Test using Postman         
-        - Method: getAllUsers
-        - GET /hateoas/users
-    - 5(B) Relation Ship Link with getAllOrders
-        - UserHateoasController & OrderHateoasController
-        - Method: getAllUsers    
-        - HATEOAS: Implement relationship linking for getAllOrders
-        - OrderHateoasController
-            - Change getAllOrders method return type to "Resources<Order>" from List<Order>  
-        - UserHateoasController
-            - Create Link with ControllerLinkBuilder
-            - Add Link
-    - Test using Postman         
-        - Method: getAllUsers
-        - GET /hateoas/users  
-    - 5(C) Self Link for getAllUsers   
-        - UserHateoasController 
-        - Method: getAllUsers    
-        - HATEOAS: Implement self linking for getAllUsers Method
-            - Create Link with ControllerLinkBuilder
-            - Add link to Resource
-    - Test using Postman         
-        - Method: getAllUsers
-        - GET /hateoas/users  
-
------------------------------------------------------------------------------
-Step-06: GIT commit code, push to remote, merge to master and push to remote 
+Step-03: GIT commit code 
 git status
 git add .
-git commit -am "HATEOAS - First Commit"
+git commit -am "First Commit - Internationalization"
 git push
 git checkout master
-git merge 07-SpringBoot-HATEOAS
+git merge 08-SpringBoot-Internationalization
 git branch -vva
 
 -----------------------------------------------------------------------------
