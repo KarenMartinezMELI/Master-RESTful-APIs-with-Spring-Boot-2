@@ -3,6 +3,7 @@ package com.stacksimplify.restservices.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Entity(name = "User")
 //Same as before, but without camelcase
 //@Table(name = "user", schema = "usermanagment")
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -38,5 +39,8 @@ public class User {
 
     @Column(name = "ssn", length=50, unique = true)
     private String ssn;
+
+    @OneToMany (mappedBy = "user")
+    List<Order> orders;
 
 }

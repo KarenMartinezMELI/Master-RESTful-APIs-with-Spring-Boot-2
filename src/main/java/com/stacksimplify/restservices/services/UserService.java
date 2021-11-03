@@ -1,12 +1,14 @@
 package com.stacksimplify.restservices.services;
 
+import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
 import com.stacksimplify.restservices.dtos.UserDetails;
 import com.stacksimplify.restservices.dtos.UserDetailsWithId;
 import com.stacksimplify.restservices.entities.User;
-import com.stacksimplify.restservices.exceptions.UserCouldntBeSavedException;
+import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.repositories.IUserRepository;
+import com.stacksimplify.restservices.utils.OrderParse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService{
@@ -25,6 +28,7 @@ public class UserService implements IUserService{
     UserService(IUserRepository userRepository){
         this.userRepository=userRepository;
     }
+
     @Override
     public List<UserDetailsWithId> getAllUsers() {
 
@@ -36,7 +40,13 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserDetailsWithId createUser(UserDetails user) throws UserExistsException, UserCouldntBeSavedException {
+    public List<OrderDetailsWithId> getAllOrders(Long id) throws UserNotFoundException {
+        List<OrderDetailsWithId> orders = getUserById(id).getOrders();
+        return orders;
+    }
+
+    @Override
+    public UserDetailsWithId createUser(UserDetails user) throws UserExistsException, EntityCouldntBeSavedException {
         User userCreation = mapUserDetailsToUser(user);
         if(userRepository.findByUsername(userCreation.getUsername()).isPresent()){
             throw new UserExistsException("User already exists in repository");
@@ -44,7 +54,7 @@ public class UserService implements IUserService{
         User userReturn = userRepository.save(userCreation);
 
         if(userReturn==null){
-            throw new UserCouldntBeSavedException("There was a problem saving the User");
+            throw new EntityCouldntBeSavedException("User","There was a problem saving the entity");
         }
 
         return mapUserToUserDetailsWithId(userReturn);
@@ -60,7 +70,7 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserDetailsWithId updateUserById(Long id, UserDetails user) throws UserNotFoundException, UserCouldntBeSavedException {
+    public UserDetailsWithId updateUserById(Long id, UserDetails user) throws UserNotFoundException, EntityCouldntBeSavedException {
 
         if(!userRepository.existsById(id)){
             throw new UserNotFoundException("User Not found in User Repository, provide the correct user id");
@@ -72,7 +82,7 @@ public class UserService implements IUserService{
         updateUser = userRepository.save(updateUser);
 
         if(updateUser==null){
-            throw new UserCouldntBeSavedException("There was a problem saving the User");
+            throw new EntityCouldntBeSavedException("User","There was a problem saving the entity");
         }
 
         return mapUserToUserDetailsWithId(updateUser);
@@ -102,6 +112,7 @@ public class UserService implements IUserService{
         userCreation.setFirstname(user.getFirstname());
         userCreation.setLastname(user.getLastname());
         userCreation.setId(user.getId());
+        userCreation.setOrders(user.getOrders().stream().map(order -> OrderParse.mapOrderToOrderDetailsWithId(order)).collect(Collectors.toList()));
         return userCreation;
     }
 
@@ -113,6 +124,7 @@ public class UserService implements IUserService{
         userCreation.setLastname(user.getLastname());
         return userCreation;
     }
+
 
 
 
