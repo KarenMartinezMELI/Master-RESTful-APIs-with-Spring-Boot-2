@@ -1,119 +1,105 @@
 # master-restful-apis-with-spring-boot-2
+-----------------------------------------------------------------------------
+Step-00: Introduction
 
 -----------------------------------------------------------------------------
-Step-00: Usecase Introduction
-    - Get All orders of a User 
-        - Method Name: getAllOrders    
-        - GET /users/{userid}/orders
-    - Create an order for a user
-        - Method Name: createOrder
-        - GET /users/{userid}/orders
-    - Get order details using orderid and userid
-        - Method Name: getOrderByOrderId
-        - GET /users/{userid}/orders/{orderid}        
-
------------------------------------------------------------------------------
-Step-01: Create GIT branch for JPA @OneToMany Association
+Step-00: New GIT branch for HATEOAS
 git branch -vva
 git status
-git checkout -b 06-SpringBoot-JPA-OneToMany
-git push --set-upstream origin 06-SpringBoot-JPA-OneToMany
+git checkout -b 07-SpringBoot-HATEOAS
+git push --set-upstream origin 07-SpringBoot-HATEOAS
 git branch -a
 
 -----------------------------------------------------------------------------
-Step-02: Create Order entity and ManyToOne Mapping
+Step-01: Add Dependency in pom.xml
+    - Add dependency in pom.xml (spring-boot-starter-hateoas)
+    - Restart SpringBootApp (to reflect new dependency changes - new jar added)
+
+-----------------------------------------------------------------------------
+Step-02: Extend both Entities to ResourceSupport
     - Entity Layer
-        - Create Order Entity
-        - Annotate with @Table(name = "orders")
-        - Add User variable
-        - Add @ManyToOne Mapping
-        - Add Fetch Type as lazy
-        - Add @JsonIgnore
-        - Add Getters and setters
-        - Add NoArgument Constructor
- 
------------------------------------------------------------------------------
-Step-03: Update User entity with @OneToMany association
-    - Add orders variable
-    - Add @OneToMany Mapping
-    - Add MappedBy to user variable in Order Entity
-    - Add getters and setters for "orders"
-    - src/main/resources
-        - update data.sql
-Option#1: Verify Column and create insert query       
-insert into orders values( 2001, 'order11', 101);        
-insert into orders values( 2002, 'order12', 101);
-insert into orders values( 2003, 'order13', 101);
-insert into orders values( 2004, 'order21', 102);
-insert into orders values( 2005, 'order22', 102);
-insert into orders values( 2006, 'order31', 103);
-Option#2: Verify Foreign Key name in DB before creating below insert queries
-insert into orders (orderid, orderdescription, user_user_id) values( 2001, 'order11', 101);
-insert into orders (orderid, orderdescription, user_user_id) values( 2002, 'order12', 101);
-insert into orders (orderid, orderdescription, user_user_id) values( 2003, 'order13', 101);
-insert into orders (orderid, orderdescription, user_user_id) values( 2004, 'order21', 102);
-insert into orders (orderid, orderdescription, user_user_id) values( 2005, 'order22', 102);
-insert into orders (orderid, orderdescription, user_user_id) values( 2006, 'order31', 103);
-
-    - Test using Postman
-        - Test#1: getAllUsers
-            - GET /users
-        - Test#2: getUserById 
-            - GET /users/101  
+        -  
 
 -----------------------------------------------------------------------------
-Step-04: Implement "getAllOrders" method in OrderController 
-    - Controller Layer: UserController
-        - Add @RequestMapping at class level and add "/users" context at class level
-        - Remove "/users" at method level for all User related methods. 
-        - This will help us when creating self links in HATEOAS section.
-    - Controller Layer: OrderController
+Step-03: Create new User and Order Controllers for HATEOAS Implementation
+    - UserHateoasController
+        - Create new UserHateoasController
         - Annotate with @RestController
-        - Annotate with @RequestMapping
-        - Method: getAllOrders
-        - GET /users/{userid}/orders
-    - Test using Postman
-        - Test#1: getAllOrders
-            - GET /users/101/orders
-        - Test#2: getAllUsers
-            - GET /users                           
-        - Test#3: getUserById
-            - GET /users/101
+        - Annotate with @RequestMapping(value = "/hateoas/users")
+        - Annotate with @Validated
+        - Autowire Repositories (UserRepository)
+        - Copy Methods getUserById, getAllUsers from UserController    
+    - OrderHateoasController
+        - Create new OrderHateoasController 
+        - Annotate with @RestController
+        - Annotate with @RequestMapping(value = "/hateoas/users")
+        - Autowire Repositories (UserRepository, OrderRepository)
+        - Copy Methods getAllOrders from OrderController to OrderHateoasController  
+    - Test with Postman
+        - getUserById
+            - GET /hateoas/users/{userid}
+        - getAllUsers
+            - GET /hateoas/users
+        - getAllOrders  
+            - GET /hateoas/users/{userid}/orders      
 
 -----------------------------------------------------------------------------
-Step-05: Implement "createOrder" method in OrderController
-    - Repository Layer
-        - Create OrderRepository
-    - Controller Layer: OrderController
-        - Method: createOrder
-        - POST /users/{userid}/orders 
-    - Test using Postman
-        - Test#1: createOrder 
-            - POST /users/101/orders  
-        - Test#2: getAllOrders
-            - GET /users/101/orders
-        - Test#3: getAllUsers
-            - GET /users
-        - Test#4: getUserById 
-            - GET /users/101            
+Step-04: Implement self link in getUserById Method 
+    - UserHateoasController
+        - getUserById - Self Linking        
+        - Method: getUserById    
+            - Extract UserId
+            - Create Link using ControllerLinkBuilder
+            - Add Link to Resource
+            - Instead of User return type -  Resource<User> (Return Type changed to Resource) 
+    - Test using Postman         
+        - Method: getUserById
+        - GET /hateoas/users/{userid}
 
 -----------------------------------------------------------------------------
-Step-06: Implement "getOrderByOrderId" method in OrderController
-    - Controller Layer: OrderController
-        - Method: getOrderByOrderId
-        - GET /users/{userid}/orders/{orderid}
-    - Test using Postman
-        - Test#1: getOrderByOrderId
-            - GET /users/{userid}/orders/{orderid}
+Step-05: Implement self and relationship links in getAllUsers Method in UserHateoasController
+    - 5(A) Self Link for each user in a for loop
+        - UserHateoasController 
+        - Method: getAllUsers    
+        - HATEOAS: Implement self linking for each user
+            - For loop
+            - Extract User 
+            - Create Link with ControllerLinkBuilder
+            - Add link 
+            - Change Return Type from List<User> to Resources<User>  
+    - Test using Postman         
+        - Method: getAllUsers
+        - GET /hateoas/users
+    - 5(B) Relation Ship Link with getAllOrders
+        - UserHateoasController & OrderHateoasController
+        - Method: getAllUsers    
+        - HATEOAS: Implement relationship linking for getAllOrders
+        - OrderHateoasController
+            - Change getAllOrders method return type to "Resources<Order>" from List<Order>  
+        - UserHateoasController
+            - Create Link with ControllerLinkBuilder
+            - Add Link
+    - Test using Postman         
+        - Method: getAllUsers
+        - GET /hateoas/users  
+    - 5(C) Self Link for getAllUsers   
+        - UserHateoasController 
+        - Method: getAllUsers    
+        - HATEOAS: Implement self linking for getAllUsers Method
+            - Create Link with ControllerLinkBuilder
+            - Add link to Resource
+    - Test using Postman         
+        - Method: getAllUsers
+        - GET /hateoas/users  
 
 -----------------------------------------------------------------------------
-Step-07: GIT commit code, push to remote, merge to master and push to remote 
+Step-06: GIT commit code, push to remote, merge to master and push to remote 
 git status
 git add .
-git commit -am "First Commit - OneToMany"
+git commit -am "HATEOAS - First Commit"
 git push
 git checkout master
-git merge 06-SpringBoot-JPA-OneToMany
+git merge 07-SpringBoot-HATEOAS
 git branch -vva
 
 -----------------------------------------------------------------------------
