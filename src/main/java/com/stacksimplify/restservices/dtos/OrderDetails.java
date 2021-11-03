@@ -1,14 +1,13 @@
 package com.stacksimplify.restservices.dtos;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class OrderDetails {
+@AllArgsConstructor
+public class OrderDetails extends RepresentationModel{
     private String description;
 }
