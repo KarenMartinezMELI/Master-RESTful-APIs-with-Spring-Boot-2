@@ -23,7 +23,7 @@ public class UserDetails extends RepresentationModel {
 	private String username;
 	private String lastname;
 	private String email;
-	@JsonIgnore
+	//@JsonIgnore
 	private String ssn;
 
 
