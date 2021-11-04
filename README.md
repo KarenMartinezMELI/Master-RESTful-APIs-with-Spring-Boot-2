@@ -3,35 +3,32 @@
 Step-00: Introduction
 
 -----------------------------------------------------------------------------
-Step-00: New GIT branch for Internationalization
-git branch -vva
-git status
-git checkout -b 08-SpringBoot-Internationalization
-git push --set-upstream origin 08-SpringBoot-Internationalization
-git branch -vva
+Step-01: New GIT branch (usign IDE)
+    - git Branch name: 09-03-SpringBoot-Filtering-JsonView
+    - Create new local branch
 
 -----------------------------------------------------------------------------
-Step-01: Create required beans
-    - Define a Bean named LocaleResolver
-    - Add messages.properties, messages_fr.properties
-    - Define a Bean named ResourceBundleMessageSource  
+Step-02: @JsonView
+    - Entity Layer 
+        - Create a class named Views
+            - Create two static classes in View (External, Internal)
+        - Annotate fields in User Entity with @JsonView 
+        - Decide which fields should be external and internal and annotate accordingly.             
+    - Controller Layer
+        - Create new controller named "UserJsonViewController"
+        - Copy getUserById method from UserController and create two methods
+            - External getUserById
+                - GET /jsonview/users/external/101
+                - Annotate with @JsonView(Views.External.class)
+                -  Test it using Postman
+            - Internal getUserById2
+                - GET /jsonview/users/internal/101
+                - Annotate with @JsonView(Views.Internal.class)
+                -  Test it using Postman       
 
------------------------------------------------------------------------------
-Step-02: Create a REST service which supports i18n
-    - Create a helloi18n Method in HelloWorldController
-    - Test it via Postman with "Accept-Language" headers
-        - Accept-Language: fr 
-        - Accept-Language: us
-        - Accept-Language: en 
-
------------------------------------------------------------------------------
-Step-03: GIT commit code 
-git status
-git add .
-git commit -am "First Commit - Internationalization"
-git push
-git checkout master
-git merge 08-SpringBoot-Internationalization
-git branch -vva
+ -----------------------------------------------------------------------------
+Step-03: Commit Code (using IDE)
+    - Commit code
+    - Push branch to Remote repo
 
 -----------------------------------------------------------------------------
