@@ -112,6 +112,7 @@ public class UserService implements IUserService{
         userCreation.setFirstname(user.getFirstname());
         userCreation.setLastname(user.getLastname());
         userCreation.setId(user.getId());
+        userCreation.setSsn(user.getSsn());
         if(user.getOrders()!=null) {
             userCreation.setOrders(user.getOrders().stream().map(order -> OrderParse.mapOrderToOrderDetailsWithId(order)).collect(Collectors.toList()));
         }else{

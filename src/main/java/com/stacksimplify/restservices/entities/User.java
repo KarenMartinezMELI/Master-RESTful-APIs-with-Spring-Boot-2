@@ -1,5 +1,6 @@
 package com.stacksimplify.restservices.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,7 +38,7 @@ public class User {
     @Column(name = "role", length=50)
     private String role;
 
-    @Column(name = "ssn", length=50, unique = true)
+    @Column(name = "ssn", nullable = true, length=50, unique = true)
     private String ssn;
 
     @OneToMany (mappedBy = "user")
