@@ -4,16 +4,19 @@ Step-00: Introduction
 
 -----------------------------------------------------------------------------
 Step-01: New GIT branch (usign IDE)
-    - git Branch name: 09-01-SpringBoot-Filtering-JsonIgnore
+    - git Branch name: 09-02-SpringBoot-Filtering-MappingJacksonValue
     - Create new local branch
 
 -----------------------------------------------------------------------------
-Step-02: Static Filtering  
-    - Entity Layer
-        - @JsonIgnore - Apply to SSN field
-        - Test
-        - @JsonIgnoreProperties - Apply to role and email
-        - Test
+Step-02: Dynamic Filtering using MappingJacksonValue class
+    - Controller Layer
+        - Create a new UserMappingJacksonController
+        - Copy getUserById methods.
+    - UserMappingJacksonController
+        - Implement filtering with static hashset 
+        - Test it
+        - Convert the same to a dynamic filtering by using @RequestParam
+        - Test it      
 
  -----------------------------------------------------------------------------
 Step-03: Commit Code (using IDE)
