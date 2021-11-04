@@ -4,19 +4,27 @@ Step-00: Introduction
 
 -----------------------------------------------------------------------------
 Step-01: New GIT branch (usign IDE)
-    - git Branch name: 09-02-SpringBoot-Filtering-MappingJacksonValue
+    - git Branch name: 09-03-SpringBoot-Filtering-JsonView
     - Create new local branch
 
 -----------------------------------------------------------------------------
-Step-02: Dynamic Filtering using MappingJacksonValue class
+Step-02: @JsonView
+    - Entity Layer 
+        - Create a class named Views
+            - Create two static classes in View (External, Internal)
+        - Annotate fields in User Entity with @JsonView 
+        - Decide which fields should be external and internal and annotate accordingly.             
     - Controller Layer
-        - Create a new UserMappingJacksonController
-        - Copy getUserById methods.
-    - UserMappingJacksonController
-        - Implement filtering with static hashset 
-        - Test it
-        - Convert the same to a dynamic filtering by using @RequestParam
-        - Test it      
+        - Create new controller named "UserJsonViewController"
+        - Copy getUserById method from UserController and create two methods
+            - External getUserById
+                - GET /jsonview/users/external/101
+                - Annotate with @JsonView(Views.External.class)
+                -  Test it using Postman
+            - Internal getUserById2
+                - GET /jsonview/users/internal/101
+                - Annotate with @JsonView(Views.Internal.class)
+                -  Test it using Postman       
 
  -----------------------------------------------------------------------------
 Step-03: Commit Code (using IDE)
