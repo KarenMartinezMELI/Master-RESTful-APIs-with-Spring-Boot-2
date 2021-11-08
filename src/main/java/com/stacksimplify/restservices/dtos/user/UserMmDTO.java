@@ -32,5 +32,5 @@ public class UserMmDTO extends RepresentationModel {
 	@JsonView(View.Internal.class)
 	private String ssn;
 
-
 }
+
