@@ -1,14 +1,13 @@
 package com.stacksimplify.restservices.services;
 
-import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
-import com.stacksimplify.restservices.dtos.UserDetails;
-import com.stacksimplify.restservices.dtos.UserDetailsWithId;
+import com.stacksimplify.restservices.dtos.order.OrderMmWithIdDTO;
+import com.stacksimplify.restservices.dtos.user.UserMmDTO;
+import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.entities.User;
-import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
 import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.repositories.IUserRepository;
-import com.stacksimplify.restservices.utils.OrderParse;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,69 +22,62 @@ import java.util.stream.Collectors;
 public class UserService implements IUserService{
 
     private final IUserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    UserService(IUserRepository userRepository){
+    UserService(IUserRepository userRepository, ModelMapper modelMapper){
         this.userRepository=userRepository;
+        this.modelMapper=modelMapper;
     }
 
     @Override
-    public List<UserDetailsWithId> getAllUsers() {
+    public List<UserMmWithIdDTO> getAllUsers() {
 
         List<User> users = userRepository.findAll();
-        List<UserDetailsWithId> usersDetails = new ArrayList<>();
+        List<UserMmWithIdDTO> usersDetails = new ArrayList<>();
 
-        users.forEach(u->usersDetails.add(mapUserToUserDetailsWithId(u)));
+        users.forEach(u->usersDetails.add(mapUserToUserMmWithIdDTO(u)));
         return usersDetails;
     }
 
     @Override
-    public List<OrderDetailsWithId> getAllOrders(Long id) throws UserNotFoundException {
-        List<OrderDetailsWithId> orders = getUserById(id).getOrders();
-        return orders;
+    public List<OrderMmWithIdDTO> getAllOrders(Long id) throws UserNotFoundException {
+        return getUserById(id).getOrders();
     }
 
     @Override
-    public UserDetailsWithId createUser(UserDetails user) throws UserExistsException, EntityCouldntBeSavedException {
-        User userCreation = mapUserDetailsToUser(user);
+    public UserMmWithIdDTO createUser(UserMmDTO user) throws UserExistsException{
+        User userCreation = mapUserMmDTOToUser(user);
         if(userRepository.findByUsername(userCreation.getUsername()).isPresent()){
             throw new UserExistsException("User already exists in repository");
         }
         User userReturn = userRepository.save(userCreation);
 
-        if(userReturn==null){
-            throw new EntityCouldntBeSavedException("User","There was a problem saving the entity");
-        }
-
-        return mapUserToUserDetailsWithId(userReturn);
+        return mapUserToUserMmWithIdDTO(userReturn);
     }
 
     @Override
-    public UserDetailsWithId getUserById(Long id) throws UserNotFoundException {
+    public UserMmWithIdDTO getUserById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if(!user.isPresent()){
             throw new UserNotFoundException("User Not found in User Repository");
         }
-        return mapUserToUserDetailsWithId(user.get());
+        return user.map(this::mapUserToUserMmWithIdDTO).orElseThrow(() ->new UserNotFoundException("User Not found in User Repository"));
     }
 
     @Override
-    public UserDetailsWithId updateUserById(Long id, UserDetails user) throws UserNotFoundException, EntityCouldntBeSavedException {
+    public UserMmWithIdDTO updateUserById(Long id, UserMmDTO user) throws UserNotFoundException{
 
         if(!userRepository.existsById(id)){
             throw new UserNotFoundException("User Not found in User Repository, provide the correct user id");
         }
 
-        User updateUser = mapUserDetailsToUser(user);
+        User updateUser = mapUserMmDTOToUser(user);
         updateUser.setId(id);
 
         updateUser = userRepository.save(updateUser);
 
-        if(updateUser==null){
-            throw new EntityCouldntBeSavedException("User","There was a problem saving the entity");
-        }
-
-        return mapUserToUserDetailsWithId(updateUser);
+        return mapUserToUserMmWithIdDTO(updateUser);
     }
 
     @Override
@@ -97,37 +89,23 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserDetailsWithId getUserByUsername(String username) {
+    public UserMmWithIdDTO getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
-        if(!user.isPresent()){
-            return null;
-        }
-        return mapUserToUserDetailsWithId(user.get());
+        return user.map(this::mapUserToUserMmWithIdDTO).orElse(null);
     }
 
-    private UserDetailsWithId mapUserToUserDetailsWithId(User user){
-        UserDetailsWithId userCreation = new UserDetailsWithId();
-        userCreation.setUsername(user.getUsername());
-        userCreation.setEmail(user.getEmail());
-        userCreation.setFirstname(user.getFirstname());
-        userCreation.setLastname(user.getLastname());
-        userCreation.setId(user.getId());
-        userCreation.setSsn(user.getSsn());
+    private UserMmWithIdDTO mapUserToUserMmWithIdDTO(User user){
+        UserMmWithIdDTO userMmWithIdDTO = modelMapper.map(user,UserMmWithIdDTO.class);
         if(user.getOrders()!=null) {
-            userCreation.setOrders(user.getOrders().stream().map(order -> OrderParse.mapOrderToOrderDetailsWithId(order)).collect(Collectors.toList()));
+            userMmWithIdDTO.setOrders(user.getOrders().stream().map(order -> modelMapper.map(order, OrderMmWithIdDTO.class)).collect(Collectors.toList()));
         }else{
-            userCreation.setOrders(new ArrayList<>());
+            userMmWithIdDTO.setOrders(new ArrayList<>());
         }
-        return userCreation;
+        return userMmWithIdDTO;
     }
 
-    private User mapUserDetailsToUser(UserDetails user){
-        User userCreation = new User();
-        userCreation.setUsername(user.getUsername());
-        userCreation.setEmail(user.getEmail());
-        userCreation.setFirstname(user.getFirstname());
-        userCreation.setLastname(user.getLastname());
-        return userCreation;
+    private User mapUserMmDTOToUser(UserMmDTO user){
+        return modelMapper.map(user,User.class);
     }
 
 

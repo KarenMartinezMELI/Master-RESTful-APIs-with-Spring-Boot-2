@@ -1,4 +1,4 @@
-package com.stacksimplify.restservices.dtos;
+package com.stacksimplify.restservices.dtos.order;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.stacksimplify.restservices.entities.View;
@@ -10,7 +10,7 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
-public class OrderDetails extends RepresentationModel{
+public class OrderMmDTO extends RepresentationModel{
     @JsonView(View.Internal.class)
     private String description;
 }

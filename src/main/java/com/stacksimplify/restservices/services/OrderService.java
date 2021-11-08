@@ -1,19 +1,16 @@
 package com.stacksimplify.restservices.services;
 
-import com.stacksimplify.restservices.dtos.OrderDetails;
-import com.stacksimplify.restservices.dtos.OrderDetailsWithId;
+import com.stacksimplify.restservices.dtos.order.OrderMmDTO;
+import com.stacksimplify.restservices.dtos.order.OrderMmWithIdDTO;
 import com.stacksimplify.restservices.entities.Order;
 import com.stacksimplify.restservices.entities.User;
-import com.stacksimplify.restservices.exceptions.EntityCouldntBeSavedException;
 import com.stacksimplify.restservices.exceptions.OrderNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.repositories.IOrderRepository;
 import com.stacksimplify.restservices.repositories.IUserRepository;
-import com.stacksimplify.restservices.utils.OrderParse;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,13 +18,15 @@ public class OrderService implements IOrderService{
 
     private final IOrderRepository orderRepository;
     private final IUserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public OrderService(IOrderRepository orderRepository, IUserRepository userRepository) {
+    public OrderService(IOrderRepository orderRepository, IUserRepository userRepository,ModelMapper modelMapper) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
-    public OrderDetailsWithId createOrder(Long userId, OrderDetails order) throws UserNotFoundException, EntityCouldntBeSavedException {
+    public OrderMmWithIdDTO createOrder(Long userId, OrderMmDTO order) throws UserNotFoundException{
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()){
             throw new UserNotFoundException("User Not found in User Repository");
@@ -37,15 +36,11 @@ public class OrderService implements IOrderService{
 
         orderReturn = orderRepository.save(orderReturn);
 
-        if(orderReturn==null){
-            throw new EntityCouldntBeSavedException("Order","There was a problem saving the entity");
-        }
-
-        return OrderParse.mapOrderToOrderDetailsWithId(orderReturn);
+        return modelMapper.map(orderReturn,OrderMmWithIdDTO.class);
     }
 
     @Override
-    public OrderDetailsWithId getOrderByUserIdAndOrderId(Long userId, Long orderId) throws UserNotFoundException, OrderNotFoundException {
+    public OrderMmWithIdDTO getOrderByUserIdAndOrderId(Long userId, Long orderId) throws UserNotFoundException, OrderNotFoundException {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()){
             throw new UserNotFoundException("User Not found in User Repository");
@@ -61,12 +56,12 @@ public class OrderService implements IOrderService{
             throw new OrderNotFoundException("Pair Order/User Not found");
         }
 
-        return OrderParse.mapOrderToOrderDetailsWithId(orderFinal);
+        return modelMapper.map(orderFinal,OrderMmWithIdDTO.class);
     }
 
-    private Order mapOrderDetailsToOrder(OrderDetails orderDetails){
+    private Order mapOrderDetailsToOrder(OrderMmDTO orderMmDTO){
         Order order = new Order();
-        order.setDescription(orderDetails.getDescription());
+        order.setDescription(orderMmDTO.getDescription());
         return order;
     }
 }

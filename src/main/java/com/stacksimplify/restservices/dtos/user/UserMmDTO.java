@@ -1,4 +1,4 @@
-package com.stacksimplify.restservices.dtos;
+package com.stacksimplify.restservices.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 //Ignore by list
 //@JsonIgnoreProperties({"firstname, lastname"})
-public class UserDetails extends RepresentationModel {
+public class UserMmDTO extends RepresentationModel {
 	@Size(min=2, message="Firstname should have at least 2 characters")
 	private String firstname;
 	@NotEmpty(message = "Username is Mandatory field. Please provide username")

@@ -1,14 +1,12 @@
 package com.stacksimplify.restservices.controllers;
 
-import com.stacksimplify.restservices.dtos.UserDetails;
-import com.stacksimplify.restservices.dtos.UserDetailsWithId;
+import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,7 @@ public class UserHateosController {
 
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
-        List<UserDetailsWithId> userDetailsWithIds = userService.getAllUsers();
+        List<UserMmWithIdDTO> userDetailsWithIds = userService.getAllUsers();
         userDetailsWithIds.forEach(
                 u->{
                     //Self link
@@ -50,7 +48,7 @@ public class UserHateosController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@Min(1) @PathVariable Long id) {
         try {
-            UserDetailsWithId userDetailsWithId = userService.getUserById(id);
+            UserMmWithIdDTO userDetailsWithId = userService.getUserById(id);
             Link selfLink = WebMvcLinkBuilder.linkTo(this.getClass()).slash(userDetailsWithId.getId()).withSelfRel();
             userDetailsWithId.add(selfLink);
             return new ResponseEntity<>(EntityModel.of(userDetailsWithId), HttpStatus.OK);

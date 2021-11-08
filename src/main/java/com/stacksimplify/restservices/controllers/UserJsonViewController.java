@@ -1,17 +1,13 @@
 package com.stacksimplify.restservices.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.stacksimplify.restservices.dtos.UserDetailsWithId;
+import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.entities.View;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +32,7 @@ public class UserJsonViewController {
     @JsonView(View.External.class)
     public ResponseEntity<?> getUserByIdExternal(@Min(1) @PathVariable Long id) {
         try {
-            UserDetailsWithId user = userService.getUserById(id);
+            UserMmWithIdDTO user = userService.getUserById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }catch (UserNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
@@ -47,7 +43,7 @@ public class UserJsonViewController {
     @JsonView(View.Internal.class)
     public ResponseEntity<?> getUserByIdInternal(@Min(1) @PathVariable Long id) {
         try {
-            UserDetailsWithId user = userService.getUserById(id);
+            UserMmWithIdDTO user = userService.getUserById(id);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }catch (UserNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
