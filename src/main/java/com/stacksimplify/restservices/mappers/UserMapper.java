@@ -26,12 +26,12 @@ public interface UserMapper {
     //List<User> to List<UserMsDTO>
     List<UserMsDTO> usersToUserMsDTOs(List<User> users);
 
-    //Order to OrderMmDTO
+    //Order to OrderMmDTO, this is needed for the property orders
     OrderMmDTO map(Order order);
 
-    // you can add custom logic
-    //PersonDto personToPersonDto(Person person) {
-    //        //hand-written mapping logic
-    //    }
+    // you can add custom logic like this
+    //default OrderMmDTO personToPersonDto(Order order) {
+        //hand-written mapping logic
+    //}
 
 }
