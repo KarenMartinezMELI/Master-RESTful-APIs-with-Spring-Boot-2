@@ -1,6 +1,5 @@
 package com.stacksimplify.restservices.controllers;
 
-import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.dtos.user.UserV1DTO;
 import com.stacksimplify.restservices.dtos.user.UserV2DTO;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
@@ -18,20 +17,20 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.constraints.Min;
 
 @RestController
-@RequestMapping("/versioning/users")
-public class UserUriVersioningController {
+@RequestMapping("/versioning/params/users")
+public class UserRequestParameterVersioningController {
 
     private final IUserService userService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserUriVersioningController(IUserService userService, ModelMapper modelMapper) {
+    public UserRequestParameterVersioningController(IUserService userService, ModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
 
 
-    @GetMapping({"/v1.0/{id}","/v1.1/{id}"})
+    @GetMapping(value = "/{id}", params = "version=1")
     public ResponseEntity<UserV1DTO> getUserByIdV1(@Min(1) @PathVariable Long id) {
         try {
             return new ResponseEntity<>(modelMapper.map(userService.getUserById(id),UserV1DTO.class), HttpStatus.OK);
@@ -40,7 +39,7 @@ public class UserUriVersioningController {
         }
     }
 
-    @GetMapping("/v2.0/{id}")
+    @GetMapping(value = "/{id}", params = "version=2")
     public ResponseEntity<UserV2DTO> getUserByIdV2(@Min(1) @PathVariable Long id) {
         try {
             return new ResponseEntity<>(modelMapper.map(userService.getUserById(id),UserV2DTO.class), HttpStatus.OK);
