@@ -1,83 +1,89 @@
 # master-restful-apis-with-spring-boot-2
----------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+Step-00: Introduction
+
+-------------------------------------------------------------------------------------------
 Step-01: New GIT branch (usign IDE)
-    - git Branch name: 10-02-SpringBoot-DTOS-MapStruct
+    - git Branch name: 11-01-SpringBoot-Versioning
     - Create new local branch
-    
----------------------------------------------------------------------------
-Step-02: Update pom.xml with necessary dependencies for MapStruct
-    - pom.xml
-**********************************
-    - Change#1: Add Properties 
-    <properties>
-        <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
-        <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
-    </properties>
-**********************************
-    - Change#2: Add mapstruct Depenedency
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-jdk8</artifactId>
-            <version>${org.mapstruct.version}</version>
-        </dependency>
-**********************************
-    - Change#3: Add MapStruct Processor Plugin
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${org.apache.maven.plugins.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                 </configuration>
-            </plugin>
-**********************************      
-
----------------------------------------------------------------------------
-Step-03: Create UserMsDTO class required for MapStruct Implementation.
+-------------------------------------------------------------------------------------------
+Step-02: Create two DTO's and add one additional field in Entity named "address"
+    - Entity Layer: User Entity
+        - Add new field named address 
+        - Update the data.sql with address 
     - DTO Layer
-        - Create UserMsDto in dtos package 
-        - Define fields that need to be exposed via UserMsDto
-        - Generate No Argument and Field Constructors
-        - Generate Getters & Setters
+        - Create two DTO's 
+            - UserDtoV1  - contains all other fields except "address"
+            - UserDtoV2  - Contains all other fields plus "address" field.     
 
----------------------------------------------------------------------------
- Step-04: Create the MapStruct Mapper Interface
-    - Mapper Layer
-        - Create an interface "UserMapper" with methods for mapping between objects (User to UserMsDto).
-        - Add a @Mapper annotation to the interface. 
-        - Configure MapStruct to use Spring’s dependency injection. 
-        - Add a ‘componentModel’ attribute with the value of ‘spring’ to the @Mapper annotation in the mapper interface.
-        - Create Methods
-            - userToUserDto
-                - Input Object: User
-                - Output Object: UserMsDto
-                - @Mapping(source = "email", target = "emailaddress")
-            - usersToUserDtos
-                - Input Object: List<User>
-                - Output Object: List<UserMsDto>
+-------------------------------------------------------------------------------------------
+Step-03: Implement URI Versioning
+    - Controller Layer  
+        - Create UserUriVersioningController by copying UserModelMapperController
+        - We are going to use ModelMapper to transform Entity to DTO.         
+        - Implement getUserByIdv1 and getUserByIdv2 methods with URI's
+        - URI Versions
+            - @GetMapping({ "/v1.0/{id}", "/v1.1/{id}" })
+            - @GetMapping("/v2.0/{id}")
+    - Test using PostMan        
+        - Version V1.0 - GET http://localhost:8080/versioning/uri/users/v1.0/101
+        - Version V1.1 - GET http://localhost:8080/versioning/uri/users/v1.1/101 
+        - Version V2.0 - GET http://localhost:8080/versioning/uri/users/v2.0/101
 
----------------------------------------------------------------------------
-Step-05: Create the REST services by calling methods defined in MapStruct Mapper. 
-    - Controller Layer
-        - Create new Controller named UserMapStructController
-        - Copy getUserById and getAllUsers methods from UserController.
-        - getAllUserMsDtos
-            - Implement this method to return DTO convereted by MapStruct
-            - Test
-        - getUserById
-            - Implement this method to return DTO convereted by MapStruct
-            - Test        
+-------------------------------------------------------------------------------------------
+Step-04: Implement Request Parameter Versioning 
+    - Controller Layer  
+        - Create UserRequestParameterVersioningController by copying UserUriVersioningController
+        - We are going to use ModelMapper to transform Entity to DTO.         
+        - Implement getUserByIdv1 and getUserByIdv2 methods with Request Parameters
+        - Request Parameters    
+            - @GetMapping(value =  "/{id}", params="version=1")
+            - @GetMapping(value =  "/{id}", params="version=2")
+     - Test using PostMan        
+        - Version V1
+            - GET http://localhost:8080/versioning/params/users/101?version=1
+        - Version V2
+            - GET http://localhost:8080/versioning/params/users/101?version=2
+                
+-------------------------------------------------------------------------------------------
+Step-05: Implement Custom Header Versioning
+    - Controller Layer  
+        - Create UserCustomHeaderVersioningController by copying UserRequestParameterVersioningController
+        - We are going to use ModelMapper to transform Entity to DTO.         
+        - Implement getUserByIdv1 and getUserByIdv2 methods with Custom Headers
+        - Custom Headers
+            - @GetMapping(value =  "/{id}", headers="API-VERSION=1")
+            - @GetMapping(value =  "/{id}", headers="API-VERSION=2")
+     - Test using PostMan        
+        - Version V1
+            - GET http://localhost:8080/versioning/header/users/101
+            - Header: API-VERSION = 1
+        - Version V2
+            - GET http://localhost:8080/versioning/header/users/101
+            - Header: API-VERSION = 2  
 
----------------------------------------------------------------------------
-Step-06: Commit & Push code via IDE
+-------------------------------------------------------------------------------------------
+Step-06: Implement Media Type Versioning 
+    - Controller Layer  
+        - Create UserMediaTypeVersioningController by copying UserRequestParameterVersioningController
+        - We are going to use ModelMapper to transform Entity to DTO. 
+        - Implement getUserByIdv1 and getUserByIdv2 methods with Custom Headers
+    - Media Type    
+    - @GetMapping(value =  "/{id}", produces="application/vnd.stacksimplify.app-v1+json")
+    - @GetMapping(value =  "/{id}", produces="application/vnd.stacksimplify.app-v2+json")
+     - Test using PostMan        
+        - Version V1
+            - GET http://localhost:8080/versioning/mediatype/users/101
+            - Header: Accept = application/vnd.stacksimplify.app-v1+json
+        - Version V2
+            - GET http://localhost:8080/versioning/mediatype/users/101
+            - Header: Accept = application/vnd.stacksimplify.app-v2+json
 
----------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+Step-07: Commit & Push code via IDE
+
+-------------------------------------------------------------------------------------------
+
+
+
