@@ -1,6 +1,6 @@
 package com.stacksimplify.restservices.controllers;
 
-import com.stacksimplify.restservices.dtos.UserDetails;
+import com.stacksimplify.restservices.dtos.user.UserMmDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -26,8 +26,8 @@ public class HelloWorldController {
         return "Hello World1";
     }
     @GetMapping("/helloworld-bean")
-    public UserDetails helloWorldBean(){
-        return new UserDetails("Karen", "Kariky", "M", "k@email.com","sd");
+    public UserMmDTO helloWorldBean(){
+        return new UserMmDTO("Karen", "Kariky", "M", "k@email.com","sd");
     }
 
     @GetMapping("/hello-int")

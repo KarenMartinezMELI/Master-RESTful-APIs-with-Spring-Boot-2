@@ -1,11 +1,9 @@
 package com.stacksimplify.restservices.controllers;
 
-import com.stacksimplify.restservices.dtos.order.OrderMmWithIdDTO;
+import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
-import com.stacksimplify.restservices.services.IOrderService;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,26 +13,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.Min;
-import java.util.List;
+//Actually you will see the mapper at service layer.
 
 @RestController
-@RequestMapping("/hateoas/users")
-public class OrderHateosController {
+@RequestMapping("/modelmapper/users")
+public class UserModelMapperController {
 
-    private final IOrderService orderService;
     private final IUserService userService;
 
     @Autowired
-    public OrderHateosController(IOrderService orderService, IUserService userService) {
-        this.orderService = orderService;
+    public UserModelMapperController(IUserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}/orders")
-    public ResponseEntity<?> getAllOrdersByUserId(@Min(1) @PathVariable("id") Long userId) {
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserMmWithIdDTO> getUserDtoById(@Min(1) @PathVariable Long id) {
         try {
-            List<OrderMmWithIdDTO> orders = userService.getAllOrders(userId);
-            return new ResponseEntity<>(CollectionModel.of(orders), HttpStatus.OK);
+            return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
         }catch (UserNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }

@@ -1,6 +1,7 @@
-package com.stacksimplify.restservices.dtos;
-import com.fasterxml.jackson.annotation.JsonFilter;
+package com.stacksimplify.restservices.dtos.user;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.stacksimplify.restservices.dtos.order.OrderMmWithIdDTO;
+import com.stacksimplify.restservices.dtos.user.UserMmDTO;
 import com.stacksimplify.restservices.entities.View;
 import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
@@ -16,9 +17,9 @@ import java.util.List;
 @Relation(collectionRelation = "users", itemRelation = "user")
 //MappingJacksonValue
 //JsonFilter("userFilter")
-public class UserDetailsWithId extends UserDetails{
+public class UserMmWithIdDTO extends UserMmDTO {
     @JsonView(View.External.class)
     private Long id;
     @JsonView(View.External.class)
-    private List<OrderDetailsWithId> orders;
+    private List<OrderMmWithIdDTO> orders;
 }

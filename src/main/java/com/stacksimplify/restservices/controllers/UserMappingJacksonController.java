@@ -3,8 +3,7 @@ package com.stacksimplify.restservices.controllers;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.stacksimplify.restservices.dtos.UserDetailsWithId;
-import com.stacksimplify.restservices.entities.User;
+import com.stacksimplify.restservices.dtos.user.UserMmWithIdDTO;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class UserMappingJacksonController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@Min(1) @PathVariable Long id) {
         try {
-            UserDetailsWithId user = userService.getUserById(id);
+            UserMmWithIdDTO user = userService.getUserById(id);
             Set<String> fields = new HashSet<>();
             fields.add("id");
             fields.add("username");
@@ -57,7 +56,7 @@ public class UserMappingJacksonController {
     public ResponseEntity<?> getUserById2(@Min(1) @PathVariable Long id,
                                           @RequestParam Set<String> fields) {
         try {
-            UserDetailsWithId user = userService.getUserById(id);
+            UserMmWithIdDTO user = userService.getUserById(id);
 
             FilterProvider filterProvider = new SimpleFilterProvider()
                     .addFilter("userFilter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));

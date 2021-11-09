@@ -1,34 +1,83 @@
 # master-restful-apis-with-spring-boot-2
------------------------------------------------------------------------------
-Step-00: Introduction
-
------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 Step-01: New GIT branch (usign IDE)
-    - git Branch name: 09-03-SpringBoot-Filtering-JsonView
+    - git Branch name: 10-02-SpringBoot-DTOS-MapStruct
     - Create new local branch
+    
+---------------------------------------------------------------------------
+Step-02: Update pom.xml with necessary dependencies for MapStruct
+    - pom.xml
+**********************************
+    - Change#1: Add Properties 
+    <properties>
+        <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
+        <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
+    </properties>
+**********************************
+    - Change#2: Add mapstruct Depenedency
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-jdk8</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+**********************************
+    - Change#3: Add MapStruct Processor Plugin
 
------------------------------------------------------------------------------
-Step-02: @JsonView
-    - Entity Layer 
-        - Create a class named Views
-            - Create two static classes in View (External, Internal)
-        - Annotate fields in User Entity with @JsonView 
-        - Decide which fields should be external and internal and annotate accordingly.             
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${org.apache.maven.plugins.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                 </configuration>
+            </plugin>
+**********************************      
+
+---------------------------------------------------------------------------
+Step-03: Create UserMsDTO class required for MapStruct Implementation.
+    - DTO Layer
+        - Create UserMsDto in dtos package 
+        - Define fields that need to be exposed via UserMsDto
+        - Generate No Argument and Field Constructors
+        - Generate Getters & Setters
+
+---------------------------------------------------------------------------
+ Step-04: Create the MapStruct Mapper Interface
+    - Mapper Layer
+        - Create an interface "UserMapper" with methods for mapping between objects (User to UserMsDto).
+        - Add a @Mapper annotation to the interface. 
+        - Configure MapStruct to use Spring’s dependency injection. 
+        - Add a ‘componentModel’ attribute with the value of ‘spring’ to the @Mapper annotation in the mapper interface.
+        - Create Methods
+            - userToUserDto
+                - Input Object: User
+                - Output Object: UserMsDto
+                - @Mapping(source = "email", target = "emailaddress")
+            - usersToUserDtos
+                - Input Object: List<User>
+                - Output Object: List<UserMsDto>
+
+---------------------------------------------------------------------------
+Step-05: Create the REST services by calling methods defined in MapStruct Mapper. 
     - Controller Layer
-        - Create new controller named "UserJsonViewController"
-        - Copy getUserById method from UserController and create two methods
-            - External getUserById
-                - GET /jsonview/users/external/101
-                - Annotate with @JsonView(Views.External.class)
-                -  Test it using Postman
-            - Internal getUserById2
-                - GET /jsonview/users/internal/101
-                - Annotate with @JsonView(Views.Internal.class)
-                -  Test it using Postman       
+        - Create new Controller named UserMapStructController
+        - Copy getUserById and getAllUsers methods from UserController.
+        - getAllUserMsDtos
+            - Implement this method to return DTO convereted by MapStruct
+            - Test
+        - getUserById
+            - Implement this method to return DTO convereted by MapStruct
+            - Test        
 
- -----------------------------------------------------------------------------
-Step-03: Commit Code (using IDE)
-    - Commit code
-    - Push branch to Remote repo
+---------------------------------------------------------------------------
+Step-06: Commit & Push code via IDE
 
------------------------------------------------------------------------------
+---------------------------------------------------------------------------
