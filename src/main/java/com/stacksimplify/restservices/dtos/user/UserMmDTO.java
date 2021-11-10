@@ -30,6 +30,8 @@ public class UserMmDTO extends RepresentationModel {
 	private String email;
 	//@JsonIgnore
 	@JsonView(View.Internal.class)
+	private String role;
+	@JsonView(View.Internal.class)
 	private String ssn;
 	@JsonView(View.Internal.class)
 	private String address;
