@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
+
+//You can use @JacksonXmlRootElement(localName = "user") and others annotations for the xml representation
 
 //Controller
 @RestController

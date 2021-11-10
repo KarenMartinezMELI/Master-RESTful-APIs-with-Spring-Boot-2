@@ -1,6 +1,7 @@
 package com.stacksimplify.restservices.dtos.order;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.stacksimplify.restservices.entities.View;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
