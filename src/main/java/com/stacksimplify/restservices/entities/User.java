@@ -35,6 +35,9 @@ public class User {
     @Column(name = "email", length=50, nullable = false)
     private String email;
 
+    @Column(name = "address", length=50)
+    private String address;
+
     @Column(name = "role", length=50)
     private String role;
 
