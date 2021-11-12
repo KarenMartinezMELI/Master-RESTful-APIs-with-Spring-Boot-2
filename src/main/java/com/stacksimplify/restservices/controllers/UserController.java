@@ -6,9 +6,13 @@ import com.stacksimplify.restservices.exceptions.UserExistsException;
 import com.stacksimplify.restservices.exceptions.UserNameNotFoundException;
 import com.stacksimplify.restservices.exceptions.UserNotFoundException;
 import com.stacksimplify.restservices.services.IUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +25,7 @@ import java.util.List;
 //You can use @JacksonXmlRootElement(localName = "user") and others annotations for the xml representation
 
 //Controller
+@Api(tags = "User Management RESTful Services", value = "UserController", description = "Controller for User Management Service")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -32,13 +37,15 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @ApiOperation(value = "Retrieve list of users")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserMmWithIdDTO>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Create a new user")
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserMmDTO user, UriComponentsBuilder builder) {
+    public ResponseEntity<?> createUser(@ApiParam("User information for a new user to be created.") @Valid @RequestBody UserMmDTO user, UriComponentsBuilder builder) {
         try {
             UserMmWithIdDTO userDetails=userService.createUser(user);
             HttpHeaders headers = new HttpHeaders();
