@@ -4,86 +4,62 @@ Step-00: Introduction
 
 ---------------------------------------------------------------------------------------------
 Step-01: New GIT branch (usign IDE)
-    - git Branch name: 12-SpringBoot-Swagger-APIDocumentation
+    - git Branch name: 13-SpringBoot-Actuator
     - Create new local branch
 
 ---------------------------------------------------------------------------------------------
-Step-02: Add Springfox Dependencies to pom.xml and Restart Embedded Tomcat
+Step-02: Add SpringBoot Actuator Depenedency in pom.xml
 		<dependency>
-    		<groupId>io.springfox</groupId>
-    		<artifactId>springfox-swagger2</artifactId>
-    		<version>2.9.2</version>
-		</dependency>		
-		<dependency>
-    		<groupId>io.springfox</groupId>
-   			 <artifactId>springfox-swagger-ui</artifactId>
-    		<version>2.9.2</version>
-		</dependency>	
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>	 
+        - Verify the endpoint
+            - http://localhost:8080/actuator
+        - Only 2 endpoints            
+            - health
+            - info
+        - Other Endpoints (full details)
+            - https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-endpoints
 
----------------------------------------------------------------------------------------------
-Step-03: Create SwaggerConfig file
-    - Annotate it with @Configuration
-    - Annotate it with @EnableSwagger2
-    - Create a Docket bean and annotate with @Bean
-    - Swagger Metadata URL
-        - http://localhost:8080/v2/api-docs
-    - Swagger UI URL
-        - http://localhost:8080/swagger-ui.html
+--------------------------------------------------------------------------------------------
+Step-03: Expose all Actuators endpoints. 
+    - application.properties
+        - management.endpoints.web.exposure.include=*
+    - Verify the endpoints
+        - http://localhost:8080/actuator   
+    - Health Endpoint
+        - management.endpoint.health.show-details=always     
 
----------------------------------------------------------------------------------------------
-Step-04: Adding API Info to modify header part of our documentation.
-    - Create a new class "ApiInfo"
-    - Update the Docket bean with this ApiInfo. 
+--------------------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------------------
-Step-05: Restrict scope of swagger document generation using API Basepackages & Paths 
-    - Update base package in RequestHandlerSelectors.basePackage
-    - Update PathSelectors.ant("/users/**") to limit to specific paths. 
-    - Verify in readable format in SWAGGER online editor https://editor.swagger.io/
-    - Fix Optional<User> responses. 
-    - Test using REST Client of SWAGGER
+Step-04: Info Endpoint
+    - Retrieve Build Properties
+        - Update pom.xml
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+        			<execution>
+            			<id>build-info</id>
+            			<goals>
+                			<goal>build-info</goal>
+            			</goals>
+        			</execution>
+    			</executions>
+			</plugin>
+    - Actuator automatically Environment Properties which starts with info in applicaton.properties
+        - info.greettings=Good Morning 
+    - Info endpoint can gather properties from many spring boot externalized sources.
+        - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html     
 
----------------------------------------------------------------------------------------------
-Step-06: Auto populate documentation for JSR-303 Validations 
-    - JSR-303 Spec: https://beanvalidation.org/
-    - Add Dependency in pom.xml and restart Embedded tomcat
-<dependency>
-   <groupId>io.springfox</groupId>
-   <artifactId>springfox-bean-validators</artifactId>
-   <version>2.9.2</version>
-</dependency>
-    - Add "@Import(BeanValidatorPluginsConfiguration.class)" on top of  swagger configuration class
-    - Verify Models in Swagger UI
+--------------------------------------------------------------------------------------------
+Step-05: Metrics Endpoint
+    - Metrics
+        - http://localhost:8080/actuator/metrics
+        - http://localhost:8080/actuator/metrics/jvm.memory.used
+        - http://localhost:8080/actuator/metrics/jvm.threads.states
+        - http://localhost:8080/actuator/metrics/http.server.requests  
 
----------------------------------------------------------------------------------------------
-Step-07: Adding Swagger Core Annotations to Model class
-    -  Core Annotations documentation 
-        - https://github.com/swagger-api/swagger-core/wiki/Annotations
-    - Core Annotations for Model class
-        - Class Level: 
-            - @ApiModel(description = "Model to create a new user")
-        - Field Level: notes, required, position, unordered without position
-            - @ApiModelProperty(notes = "userid - Unique identifier of user", required = true, position = 1)
-            - @ApiModelProperty(notes = "username of user", required = false, position = 2)
-            - @ApiModelProperty(notes = "First name of the User.", example = "Kalyan", required = false, position = 3)
-            - @ApiModelProperty(notes = "SSN of the User.", example = "SSN1010", required = true, position = 4)
-    - Test
-
----------------------------------------------------------------------------------------------
-Step-08: Adding Swagger Core Annotations to Controller classes
-    - Controller Level
-        - @Api(tags = "User Management RESTful Services", value = "UserController", description = "Controller for User Management Service")
-    - Method Level
-        - @ApiOperation(value = "Create a new user")
-    - Parameter Level 
-        - @ApiParam("User information for a new user to be created.")
-    - produces         
-
----------------------------------------------------------------------------------------------
-Step-09: Commit & Push code via IDE
-
----------------------------------------------------------------------------------------------
-
-
-
-
+--------------------------------------------------------------------------------------------
+    
+ -
