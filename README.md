@@ -1,65 +1,61 @@
 # master-restful-apis-with-spring-boot-2
----------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
 Step-00: Introduction
 
----------------------------------------------------------------------------------------------
-Step-01: New GIT branch (usign IDE)
-    - git Branch name: 13-SpringBoot-Actuator
+-------------------------------------------------------------------------------------------
+Step-01: New GIT branch (using IDE)
+    - git Branch name: 14-SpringBoot-Actuator-Micrometer
     - Create new local branch
 
----------------------------------------------------------------------------------------------
-Step-02: Add SpringBoot Actuator Depenedency in pom.xml
+-------------------------------------------------------------------------------------------
+Step-02: Add Micrometer depenedency for Metrics.
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>	 
-        - Verify the endpoint
-            - http://localhost:8080/actuator
-        - Only 2 endpoints            
-            - health
-            - info
-        - Other Endpoints (full details)
-            - https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-endpoints
+		    <groupId>io.micrometer</groupId>
+		    <artifactId>micrometer-core</artifactId>
+		    <version>1.2.0</version>
+		</dependency>	
+    - Simple (In-Memory backend -  Fall back option) - by default enabled
+        - To disable: management.metrics.export.simple.enabled=false
+        - http://localhost:8080/actuator/metrics/process.files.open 
 
---------------------------------------------------------------------------------------------
-Step-03: Expose all Actuators endpoints. 
-    - application.properties
-        - management.endpoints.web.exposure.include=*
-    - Verify the endpoints
-        - http://localhost:8080/actuator   
-    - Health Endpoint
-        - management.endpoint.health.show-details=always     
+-------------------------------------------------------------------------------------------		
+Step-03: Integrate with JMX  and view metrics in JConsole using JMX (Export Metrics)
+    - Add the JMX dependency.
+	    <dependency>
+		  <groupId>io.micrometer</groupId>
+		  <artifactId>micrometer-registry-jmx</artifactId>
+		  <version>1.2.0</version>
+		</dependency>	
+	- Add JMX property
+		- management.metrics.export.jmx.enabled: true		
+    - Test        			
+        - JVM Threads live
 
---------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------		
+Step-04: Integrate with AppOptics to export metrics and View metrics in AppOptics  (Solarwinds product)
+	- AppOptics 
+		- Create a trial user in AppOptics (https://www.appoptics.com/)
+		- Create API Token by navigating to  Settings -> API Tokens
+	- Our SpringBoot Application
+		- Add this token in our project application.properties
+			- management.metrics.export.appoptics.api-token=TOKEN
+		- Add Dependency for AppOptics in pom.xml & restart embedded tomcat
+		<dependency>
+		  <groupId>io.micrometer</groupId>
+		  <artifactId>micrometer-registry-appoptics</artifactId>
+		  <version>1.2.0</version>
+		</dependency>		
+		- Create "MonitoringConfig" file by referring documentation for AppOpticsConfig
+			- https://micrometer.io/docs/registry/appOptics
+		- Restart JVM
 
-Step-04: Info Endpoint
-    - Retrieve Build Properties
-        - Update pom.xml
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-        			<execution>
-            			<id>build-info</id>
-            			<goals>
-                			<goal>build-info</goal>
-            			</goals>
-        			</execution>
-    			</executions>
-			</plugin>
-    - Actuator automatically Environment Properties which starts with info in applicaton.properties
-        - info.greettings=Good Morning 
-    - Info endpoint can gather properties from many spring boot externalized sources.
-        - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html     
+-------------------------------------------------------------------------------------------				
+Step-05: Perform Tests using POSTMAN
+		- Perform "Collection Runner" test via Postman with 1000 requests. 
+		- Verify metrics in Dashboards --> Metrics		
+		- Add some dashboards and show live data flowing.
 
---------------------------------------------------------------------------------------------
-Step-05: Metrics Endpoint
-    - Metrics
-        - http://localhost:8080/actuator/metrics
-        - http://localhost:8080/actuator/metrics/jvm.memory.used
-        - http://localhost:8080/actuator/metrics/jvm.threads.states
-        - http://localhost:8080/actuator/metrics/http.server.requests  
+-------------------------------------------------------------------------------------------		
+Step-05: Commit & Push code via IDE
 
---------------------------------------------------------------------------------------------
-    
- -
+-------------------------------------------------------------------------------------------		
