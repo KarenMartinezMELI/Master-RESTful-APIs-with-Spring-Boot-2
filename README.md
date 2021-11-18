@@ -1,65 +1,54 @@
-# master-restful-apis-with-spring-boot-2
----------------------------------------------------------------------------------------------
-Step-00: Introduction
+# master-springboot-admin
+--------------------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------------------
-Step-01: New GIT branch (usign IDE)
-    - git Branch name: 13-SpringBoot-Actuator
-    - Create new local branch
-
----------------------------------------------------------------------------------------------
-Step-02: Add SpringBoot Actuator Depenedency in pom.xml
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>	 
-        - Verify the endpoint
-            - http://localhost:8080/actuator
-        - Only 2 endpoints            
-            - health
-            - info
-        - Other Endpoints (full details)
-            - https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-endpoints
+Step-01: SpringBoot Admin server - Base project setup
+- Create new SpringBoot Project from SpringBoot Initializer
+- Add Depenedencies
+<dependency>
+<groupId>de.codecentric</groupId>
+<artifactId>spring-boot-admin-starter-server</artifactId>
+<version>2.1.6</version>
+</dependency>
+- Annotate with @EnableAdminServer for Springboot main application class file.
+- Change the port to 9080
+- application.properties - server.port=9080
+- Access SpringBoot Admin server    
+- http://localhost:9080                
+- References
+- http://codecentric.github.io/spring-boot-admin/2.1.6/#getting-started
 
 --------------------------------------------------------------------------------------------
-Step-03: Expose all Actuators endpoints. 
+Step-02: Point SpringBoot Client Application (SpringBoot-BuildingBlocks project)
+- Add SpringBoot Admin client depenedency
+<dependency>
+<groupId>de.codecentric</groupId>
+<artifactId>spring-boot-admin-starter-client</artifactId>
+<version>2.1.6</version>
+</dependency>
+
     - application.properties
-        - management.endpoints.web.exposure.include=*
-    - Verify the endpoints
-        - http://localhost:8080/actuator   
-    - Health Endpoint
-        - management.endpoint.health.show-details=always     
-
---------------------------------------------------------------------------------------------
-
-Step-04: Info Endpoint
-    - Retrieve Build Properties
-        - Update pom.xml
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-        			<execution>
-            			<id>build-info</id>
-            			<goals>
-                			<goal>build-info</goal>
-            			</goals>
-        			</execution>
-    			</executions>
-			</plugin>
-    - Actuator automatically Environment Properties which starts with info in applicaton.properties
-        - info.greettings=Good Morning 
-    - Info endpoint can gather properties from many spring boot externalized sources.
-        - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html     
-
---------------------------------------------------------------------------------------------
-Step-05: Metrics Endpoint
-    - Metrics
-        - http://localhost:8080/actuator/metrics
-        - http://localhost:8080/actuator/metrics/jvm.memory.used
-        - http://localhost:8080/actuator/metrics/jvm.threads.states
-        - http://localhost:8080/actuator/metrics/http.server.requests  
-
---------------------------------------------------------------------------------------------
+        - spring.boot.admin.client.url=http://localhost:9080  
+        - management.endpoints.web.exposure.include=*    
+    - Also supports SpringBoot Cloud Discovery and equivalent client depenedency available too.                   
+    - Add Tags for Instances
+        #using the metadata
+        spring.boot.admin.client.instance.metadata.tags.environment=dev
+        #using the info endpoint
+        info.tags.environment=dev    
+    - Test SpringBoot Admin Server
     
- -
+--------------------------------------------------------------------------------------------
+Step-03: Test the features in Spring Boot Admin Server
+- Insights
+-> Details - Actuator Health Endpoint
+-> Metrics - Actuator Metrics Endpoint
+- It goes on this way with all actuator endpoints.
+- Web
+- Http Traces  (Run postman request runner in parallel to monitor)
+
+--------------------------------------------------------------------------------------------
+Step-04: Commit & Push code via IDE
+
+--------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------
