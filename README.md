@@ -31,6 +31,11 @@ Step-03: Integrate with JMX  and view metrics in JConsole using JMX (Export Metr
     - Test        			
         - JVM Threads live
 
+If jconsole does not work, set up in your ID config, the VM arguments with the following setup (separated with space):
+-Dcom.sun.management.jmxremote 
+-Dcom.sun.management.jmxremote.local.only=false 
+-Djava.rmi.server.hostname=localhost
+
 -------------------------------------------------------------------------------------------		
 Step-04: Integrate with AppOptics to export metrics and View metrics in AppOptics  (Solarwinds product)
 	- AppOptics 
